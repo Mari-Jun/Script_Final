@@ -1,6 +1,6 @@
 from tkinter import *
 from tkcalendar import Calendar
-from GUI import MainGUI
+import MainGUI
 import datetime
 
 class Cal:

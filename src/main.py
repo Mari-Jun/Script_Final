@@ -1,3 +1,3 @@
-from GUI import MainGUI
+import MainGUI
 
 MainGUI.MainGUI()

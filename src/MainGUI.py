@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import font
 from PIL import Image, ImageTk
-from GUI import Calendar
+import Calendar, Weather
 import datetime
 
 T_POS_X, T_POS_Y = 100, 150
@@ -45,12 +45,16 @@ class MainGUI:
         self.time_remaing_text = self.canvas.create_text((T_POS_X, T_POS_Y + 80), font=self.font_dic["Forte"],\
                                 text=str(time_remaining), anchor=W)
         self.cur_time_text = self.canvas.create_text((T_POS_X, T_POS_Y + 180), font=self.font_dic["Cooper"],\
-                                text=("현재 시간: " + now.strftime("%Y-%m-%d %H:%M:%S")), anchor=W)
+                                text=("현재 시간: " + now.strftime("%Y-%m-%d %H:%M:%S")), anchor=W, fill="lavender")
         self.travel_date_text = self.canvas.create_text((T_POS_X, T_POS_Y + 230), font=self.font_dic["Cooper"],\
-                                text=("일출 시간: " + self.travel_date.strftime("%Y-%m-%d %H:%M:%S")), anchor=W)
+                                text=("일출 시간: " + self.travel_date.strftime("%Y-%m-%d %H:%M:%S")), anchor=W, fill="lavender")
         self.cur_location_text = self.canvas.create_text((T_POS_X, T_POS_Y + 280), font=self.font_dic["Cooper"],\
-                                text=("지역: " + self.cur_location), anchor=W)
+                                text=("지역: " + self.cur_location), anchor=W, fill="lavender")
+        self.cur_weather_text = self.canvas.create_text((T_POS_X, T_POS_Y + 380), font=self.font_dic["Cooper"],\
+                                text="", anchor=W, fill="lavender")
+        self.cur_weather_icon =  self.canvas.create_image((T_POS_X, T_POS_Y + 430), image=None, anchor=W)
         self.UpdateTime()
+        self.UpdateWeather()
 
     def UpdateTime(self):
         now = datetime.datetime.now()
@@ -61,6 +65,17 @@ class MainGUI:
         self.canvas.itemconfig(self.cur_time_text, text=("현재 시간: " + now.strftime("%Y-%m-%d %H:%M:%S")))
         self.canvas.itemconfig(self.travel_date_text, text=("일출 시간: " + self.travel_date.strftime("%Y-%m-%d %H:%M:%S")))
         self.gui.after(500, self.UpdateTime)
+
+    def UpdateWeather(self):
+        Weather.LoadCurrentWeather("seoul,KR")
+        w_data = Weather.ShowCurrentWeather()
+        self.canvas.itemconfig(self.cur_weather_text, text=("날씨: {0}, 기온: {1}, 구름양: {2}").format(\
+            w_data[0], w_data[1], w_data[2]))
+        self.weather_icon = PhotoImage(data=w_data[3])
+        self.weather_icon.subsample(3, 3)
+        self.canvas.itemconfig(self.cur_weather_icon, image=self.weather_icon)
+        self.gui.after(5000, self.UpdateTime)
+
 
     def SetButtons(self):
         self.b_image_list = []
