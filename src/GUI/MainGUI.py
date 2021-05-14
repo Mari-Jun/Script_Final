@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import font
 from PIL import Image, ImageTk
+from GUI import Calendar
 import datetime
 
 T_POS_X, T_POS_Y = 100, 150
@@ -65,18 +66,22 @@ class MainGUI:
         self.b_image_list = []
         self.SetMainButton("asset/magnifier.png", B_POS_X, B_POS_Y)
         self.SetMainButton("asset/map.png", B_POS_X, B_POS_Y + B_Size)
-        self.SetMainButton("asset/calendar.png", B_POS_X, B_POS_Y + B_Size * 2)
+        self.SetMainButton("asset/calendar.png", B_POS_X, B_POS_Y + B_Size * 2, self.CreateCalendar)
         self.SetMainButton("asset/sunset.png", B_POS_X, B_POS_Y + B_Size * 3)
         self.SetMainButton("asset/detail.png", B_POS_X, B_POS_Y + B_Size * 4)
         self.SetMainButton("asset/gmail.png", B_POS_X, B_POS_Y + B_Size * 5)
         self.SetMainButton("asset/telegram.png", B_POS_X, B_POS_Y + B_Size * 6)
 
 
-    def SetMainButton(self, dir, x_pos, y_pos):
+    def SetMainButton(self, dir, x_pos, y_pos, cmd = None):
         img = Image.open(dir)
         img = img.resize((B_Size, B_Size), Image.ANTIALIAS)
         b_image = ImageTk.PhotoImage(img)
         self.b_image_list.append(b_image)
-        Button(self.canvas, image=b_image, width=B_Size, height=B_Size).place(x=x_pos, y=y_pos)
+        Button(self.canvas, image=b_image, width=B_Size, height=B_Size, command=cmd).place(x=x_pos, y=y_pos)
+
+    def CreateCalendar(self):
+        Calendar.Cal(self)
+
 
 
