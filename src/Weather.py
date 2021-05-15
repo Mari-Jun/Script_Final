@@ -22,7 +22,8 @@ is_cur_data_update = False
 def LoadIconData():
     if not show_icon:
         return
-    icons = ["01d", "02d", "03d", "04d", "09d", "10d", "11d", "13d", "50d"]
+    icons = ["01d", "02d", "03d", "04d", "09d", "10d", "11d", "13d", "50d",\
+             "01n", "02n", "03n", "04n", "09n", "10n", "11n", "13n", "50n"]
     for icon in icons:
         url = icon_url.format(icon=icon)
         icon_url_data = urllib.request.urlopen(url)
@@ -52,7 +53,6 @@ class ForecastGUI:
     def __init__(self, MainGui):
         if ForecastGUI.is_open:
             return
-        ForecastGUI.is_open = True
         self.main_gui = MainGui
         self.gui = Toplevel(self.main_gui.gui)
         self.gui.title("Forecast")
@@ -69,6 +69,8 @@ class ForecastGUI:
 
         self.gui.protocol("WM_DELETE_WINDOW", self.Closing)
 
+        ForecastGUI.is_open = True
+
         self.gui.mainloop()
 
     def SetCurWeatherInfo(self):
@@ -83,7 +85,7 @@ class ForecastGUI:
 
     def UpdateCurWeatherInfo(self):
         global is_cur_data_update
-        if is_cur_data_update:
+        if is_cur_data_update or not ForecastGUI.is_open:
             is_cur_data_update = False
             self.canvas.itemconfig(self.cur_data["date"], text="{0} - {1}".format(\
                 cg_unix_md(json_data["dt"]), cg_unix_d(json_data["dt"])))
