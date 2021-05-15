@@ -30,9 +30,8 @@ class MainGUI:
         self.font_dic["Cooper"] = font.Font(family="Cooper Black", size=16, weight="bold")
 
     def SetBackGround(self):
-        bgImg = PhotoImage(file="asset/bg_sunset.png")
-        image_list.append(bgImg)
-        self.canvas.create_image((0, 0), image=bgImg, anchor=N+W)
+        image_list.append(PhotoImage(file="asset/bg_sunset.png"))
+        self.canvas.create_image((0, 0), image=image_list[-1], anchor=N+W)
 
     def SetMainTexts(self):
         self.travel_date = datetime.datetime(2021, 5, 15, 20, 30)
@@ -97,6 +96,10 @@ class MainGUI:
         b_image = ImageTk.PhotoImage(img)
         image_list.append(b_image)
         Button(self.canvas, image=b_image, width=B_Size, height=B_Size, command=cmd).place(x=x_pos, y=y_pos)
+
+    def CreateMap(self):
+        #이 부분에서 self.cur_location을 설정해서 다른 부분을 수정해야함. 따로 MapGUI 클래스 생성해서 만들자.
+        pass
 
     def CreateCalendar(self):
         Calendar.CalendarGUI(self)

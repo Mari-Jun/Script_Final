@@ -36,6 +36,18 @@ class ForecastGUI:
         self.main_gui = MainGui
         self.gui = Toplevel(self.main_gui.gui)
         self.gui.title("Forecast")
+        self.gui.geometry("700x500")
+        self.gui.resizable(width=False, height=False)
+
+        detail_frame = Frame(self.gui, relief="ridge", background="light sky blue", borderwidth=5, height=300)
+        detail_frame.pack(side="top", fill="both", expand=True)
+
+        daliy_frame = Frame(self.gui, relief="solid", background="deep sky blue", borderwidth=5, height=200)
+        daliy_frame.pack(side="bottom", fill="both", expand=True)
+
+        #ttk.Separator(daliy_frame, orient="vertical").grid(row=0, column=1, stikcy="ns")
+
+        self.gui.mainloop()
 
 
 

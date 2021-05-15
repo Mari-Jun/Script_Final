@@ -1,9 +1,12 @@
 from tkinter import *
 from tkinter import font
+import tkinter.ttk as ttk
 from PIL import Image, ImageTk
 
+#이미지들은 여기에 저장
 image_list = []
 
+#canvas에서 alpha rectangle을 사용하고 싶을 때 사용
 def CreateAlphaRectangle(gui, canvas, x1, y1, x2, y2, **kwargs):
     if "alpha" in kwargs:
         alpha = int(kwargs.pop("alpha") * 255)
