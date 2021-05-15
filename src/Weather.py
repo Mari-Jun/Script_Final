@@ -42,7 +42,10 @@ CW_WIDTH, CW_HEIGHT = 900, 300
 WW_WIDTH = 150
 
 class ForecastGUI:
+    is_open = False
     def __init__(self, MainGui):
+        if ForecastGUI.is_open:
+            return
         self.main_gui = MainGui
         self.gui = Toplevel(self.main_gui.gui)
         self.gui.title("Forecast")
@@ -55,6 +58,8 @@ class ForecastGUI:
 
         self.SetCurWeatherInfo()
         self.SetWeekWeatherInfo()
+
+        self.gui.protocol("WM_DELETE_WINDOW", self.Closing)
 
         self.gui.mainloop()
 
@@ -112,3 +117,7 @@ class ForecastGUI:
         self.canvas.itemconfig(self.week_data[day]["pop"], text="pop : {pop}%".format(\
             pop=int(json_day_data["daily"][day]["pop"] * 100)))
         self.canvas.itemconfig(self.week_data[day]["icon"], image=icon_data[json_day_data["daily"][day]["weather"][0]["icon"]])
+
+    def Closing(self):
+        ForecastGUI.is_open = False
+        self.gui.destroy()
