@@ -74,7 +74,7 @@ class MainGUI:
         self.canvas.itemconfig(self.cur_weather_text, text=("날씨: {0}, 기온: {1}, 구름양: {2}").format(\
             w_data[0], w_data[1], w_data[2]))
         self.canvas.itemconfig(self.cur_weather_icon, image=w_data[3])
-        self.gui.after(5000, self.UpdateTime)
+        self.gui.after(60000, self.UpdateWeather)
 
     def SetButtons(self):
         self.SetMainButton("asset/magnifier.png", B_POS_X, B_POS_Y)

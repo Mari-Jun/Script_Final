@@ -10,6 +10,7 @@ font_dic = {}
 def LoadFonts():
     print(list(font.families()))
     font_dic["Forte"] = font.Font(family="Forte", size=30, weight="bold")
+    font_dic["Forte20"] = font.Font(family="Forte", size=20, weight="bold")
     font_dic["Cooper"] = font.Font(family="Cooper Black", size=16, weight="bold")
     font_dic["CooperSmall"] = font.Font(family="Cooper Black", size=10, weight="bold")
 
