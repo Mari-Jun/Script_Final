@@ -2,6 +2,7 @@ import urllib.request
 import json
 import base64
 import datetime
+from TKHelper import *
 
 apikey = "733f3162f8e13267b03559210f37cc68"
 
@@ -29,9 +30,12 @@ def ShowCurrentWeather():
     data = [json_data["weather"][0]["description"], round(k2c(json_data["main"]["temp"])), json_data["clouds"]["all"],\
             base64.encodebytes(icon_data)]
     return data
-    # print("| 날씨 =", )
-    # print("| 기온 =", )
-    # print("| 구름양 = ", )
+
+class ForecastGUI:
+    def __init__(self, MainGui):
+        self.main_gui = MainGui
+        self.gui = Toplevel(self.main_gui.gui)
+        self.gui.title("Forecast")
 
 
 

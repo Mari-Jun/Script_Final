@@ -1,12 +1,13 @@
-from tkinter import *
+from TKHelper import *
 from tkcalendar import Calendar
 import MainGUI
 import datetime
 
-class Cal:
+class CalendarGUI:
     def __init__(self, MainGui):
         self.main_gui = MainGui
         self.cal_gui = Toplevel(self.main_gui.gui)
+        self.cal_gui.title("Calendar")
         now = datetime.datetime.now()
         self.cal = Calendar(self.cal_gui, selectmode='day', year=now.year, month=now.month, day=now.day)
         self.cal.pack(pady = 20)

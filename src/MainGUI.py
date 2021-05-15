@@ -1,12 +1,10 @@
-from tkinter import *
-from tkinter import font
-from PIL import Image, ImageTk
+from TKHelper import *
 import Calendar, Weather
 import datetime
 
 T_POS_X, T_POS_Y = 100, 150
-B_Size = 80
-B_POS_X, B_POS_Y = 1100, 100
+B_Size = 75
+B_POS_X, B_POS_Y = 1150, 50
 
 class MainGUI:
     def __init__(self):
@@ -20,6 +18,7 @@ class MainGUI:
         self.LoadFonts()
         self.SetBackGround()
         self.SetMainTexts()
+        self.SetMainWeather()
         self.SetButtons()
 
         self.gui.mainloop()
@@ -31,8 +30,9 @@ class MainGUI:
         self.font_dic["Cooper"] = font.Font(family="Cooper Black", size=16, weight="bold")
 
     def SetBackGround(self):
-        self.bgImg = PhotoImage(file="asset/bg_sunset.png")
-        self.canvas.create_image((0, 0), image=self.bgImg, anchor=N+W)
+        bgImg = PhotoImage(file="asset/bg_sunset.png")
+        image_list.append(bgImg)
+        self.canvas.create_image((0, 0), image=bgImg, anchor=N+W)
 
     def SetMainTexts(self):
         self.travel_date = datetime.datetime(2021, 5, 15, 20, 30)
@@ -50,10 +50,16 @@ class MainGUI:
                                 text=("일출 시간: " + self.travel_date.strftime("%Y-%m-%d %H:%M:%S")), anchor=W, fill="lavender")
         self.cur_location_text = self.canvas.create_text((T_POS_X, T_POS_Y + 280), font=self.font_dic["Cooper"],\
                                 text=("지역: " + self.cur_location), anchor=W, fill="lavender")
-        self.cur_weather_text = self.canvas.create_text((T_POS_X, T_POS_Y + 380), font=self.font_dic["Cooper"],\
-                                text="", anchor=W, fill="lavender")
-        self.cur_weather_icon =  self.canvas.create_image((T_POS_X, T_POS_Y + 430), image=None, anchor=W)
         self.UpdateTime()
+
+
+    def SetMainWeather(self):
+        CreateAlphaRectangle(self.gui, self.canvas, T_POS_X - 30, T_POS_Y + 330, T_POS_X + 500, T_POS_Y + 480,\
+                             color="white", alpha=0.7)
+
+        self.cur_weather_text = self.canvas.create_text((T_POS_X, T_POS_Y + 380), font=self.font_dic["Cooper"], \
+                                                       text="", anchor=W, fill="dim gray")
+        self.cur_weather_icon = self.canvas.create_image((T_POS_X, T_POS_Y + 430), image=None, anchor=W)
         self.UpdateWeather()
 
     def UpdateTime(self):
@@ -72,31 +78,28 @@ class MainGUI:
         self.canvas.itemconfig(self.cur_weather_text, text=("날씨: {0}, 기온: {1}, 구름양: {2}").format(\
             w_data[0], w_data[1], w_data[2]))
         self.weather_icon = PhotoImage(data=w_data[3])
-        self.weather_icon.subsample(3, 3)
         self.canvas.itemconfig(self.cur_weather_icon, image=self.weather_icon)
         self.gui.after(5000, self.UpdateTime)
 
-
     def SetButtons(self):
-        self.b_image_list = []
         self.SetMainButton("asset/magnifier.png", B_POS_X, B_POS_Y)
-        self.SetMainButton("asset/map.png", B_POS_X, B_POS_Y + B_Size)
-        self.SetMainButton("asset/calendar.png", B_POS_X, B_POS_Y + B_Size * 2, self.CreateCalendar)
-        self.SetMainButton("asset/sunset.png", B_POS_X, B_POS_Y + B_Size * 3)
-        self.SetMainButton("asset/detail.png", B_POS_X, B_POS_Y + B_Size * 4)
-        self.SetMainButton("asset/gmail.png", B_POS_X, B_POS_Y + B_Size * 5)
-        self.SetMainButton("asset/telegram.png", B_POS_X, B_POS_Y + B_Size * 6)
+        self.SetMainButton("asset/sunrise.png", B_POS_X, B_POS_Y + B_Size)
+        self.SetMainButton("asset/map.png", B_POS_X, B_POS_Y + B_Size * 2)
+        self.SetMainButton("asset/calendar.png", B_POS_X, B_POS_Y + B_Size * 3, self.CreateCalendar)
+        self.SetMainButton("asset/forecast.png", B_POS_X, B_POS_Y + B_Size * 4, self.CreateForecast)
+        self.SetMainButton("asset/detail.png", B_POS_X, B_POS_Y + B_Size * 5)
+        self.SetMainButton("asset/gmail.png", B_POS_X, B_POS_Y + B_Size * 6)
+        self.SetMainButton("asset/telegram.png", B_POS_X, B_POS_Y + B_Size * 7)
 
-
-    def SetMainButton(self, dir, x_pos, y_pos, cmd = None):
+    def SetMainButton(self, dir, x_pos, y_pos, cmd=None):
         img = Image.open(dir)
         img = img.resize((B_Size, B_Size), Image.ANTIALIAS)
         b_image = ImageTk.PhotoImage(img)
-        self.b_image_list.append(b_image)
+        image_list.append(b_image)
         Button(self.canvas, image=b_image, width=B_Size, height=B_Size, command=cmd).place(x=x_pos, y=y_pos)
 
     def CreateCalendar(self):
-        Calendar.Cal(self)
+        Calendar.CalendarGUI(self)
 
-
-
+    def CreateForecast(self):
+        Weather.ForecastGUI(self)
