@@ -15,7 +15,15 @@ def LoadFonts():
     font_dic["CooperSmall"] = font.Font(family="Cooper Black", size=10, weight="bold")
 
 #이미지들은 여기에 저장
+image_dic = {}
 image_list = []
+
+def LoadImageDir(dir, width=None, height=None):
+    img = Image.open(dir)
+    if width != None and height != None:
+        img = img.resize((width, height), Image.ANTIALIAS)
+    b_image = ImageTk.PhotoImage(img)
+    image_dic[dir] = b_image
 
 #canvas에서 alpha rectangle을 사용하고 싶을 때 사용
 def CreateAlphaRectangle(gui, canvas, x1, y1, x2, y2, **kwargs):
