@@ -1,6 +1,7 @@
 from TKHelper import *
 from tkcalendar import Calendar
 import MainGUI
+
 import datetime
 
 class CalendarGUI:
@@ -28,10 +29,9 @@ class CalendarGUI:
     def SetTravelDate(self):
         date = self.cal.selection_get()
         self.main_gui.travel_date = datetime.datetime(date.year, date.month, date.day, 20, 30)
+        self.main_gui.text.set(self.main_gui.travel_date.strftime("%Y-%m-%d"))
         print(self.main_gui.travel_date)
 
     def Closing(self):
         CalendarGUI.is_open = False
         self.gui.destroy()
-
-
