@@ -32,7 +32,8 @@ class MainGUI:
         self.bg_image = self.canvas.create_image((0, 0), image=image_dic[dir], anchor=N+W)
 
     def SetMainTexts(self):
-        self.travel_date = datetime.datetime(2021, 6, 1, 20, 30)
+        now = datetime.datetime.now() + datetime.timedelta(hours=1)
+        self.travel_date = datetime.datetime(now.year, now.month, now.day, now.hour, now.minute)
         self.cur_location = "서울"
 
         self.subtitle = self.canvas.create_text((T_POS_X, T_POS_Y), font=font_dic["Forte"],\

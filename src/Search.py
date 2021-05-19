@@ -1,6 +1,6 @@
 from TKHelper import *
 import tkinter.messagebox
-import Calendar
+from Calendar import *
 import datetime
 import SunInfo
 B_Size = 35
@@ -18,16 +18,20 @@ class SearchGUI:
 
         self.DataList=[]
 
-
         self.InitInputLabel()
         self.InitRenderText()
         self.InitSearchListBox()
         self.InitSearchButton()
 
         self.gui.mainloop()
+
+    def だめだね(self):
+        print("だめだね、だめなのよ～")
+
     #너꺼 가져다 썼다 고맙다
     def CreateCalendar(self):
-            Calendar.CalendarGUI(self)
+            CalendarGUI(self, selectCommand=self.だめだね)
+
     def SetMainButton(self, dir, x_pos, y_pos, cmd=None):
         img = Image.open(dir)
         img = img.resize((B_Size, B_Size), Image.ANTIALIAS)
