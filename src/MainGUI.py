@@ -1,6 +1,7 @@
 from TKHelper import *
 from Calendar import *
 from Weather import *
+import Search
 import datetime
 
 T_POS_X, T_POS_Y = 100, 150
@@ -83,7 +84,7 @@ class MainGUI:
         self.gui.after(60000, self.UpdateWeather)
 
     def SetButtons(self):
-        self.SetMainButton("asset/magnifier.png", B_POS_X, B_POS_Y)
+        self.SetMainButton("asset/magnifier.png", B_POS_X, B_POS_Y,self.CreateSearch)
         self.sun_button = self.SetMainButton("asset/sunrise.png", B_POS_X, B_POS_Y + B_Size, self.ChangeSunRiseSunSet)
         self.is_sunrise = True
         LoadImageDir("asset/sunset.png", B_Size, B_Size)
@@ -119,3 +120,6 @@ class MainGUI:
 
     def CreateForecast(self):
         ForecastGUI(self)
+
+    def CreateSearch(self):
+        Search.SearchGUI(self)

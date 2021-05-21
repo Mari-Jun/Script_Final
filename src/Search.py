@@ -2,11 +2,16 @@ from TKHelper import *
 import tkinter.messagebox
 from Calendar import *
 import datetime
-import SunInfo
+from SunInfo import *
 B_Size = 35
 class SearchGUI:
-    def __init__(self):
-        self.gui = Tk()
+    is_open=False
+    def __init__(self,MainGui):
+        if SearchGUI.is_open:
+            return
+        SearchGUI.is_open = True
+        self.main_gui = MainGui
+        self.gui = Toplevel(self.main_gui.gui)
         self.gui.title("검색")
         self.gui.geometry("900x400")
         self.gui.resizable(width=False, height=False)
@@ -14,23 +19,31 @@ class SearchGUI:
         self.canvas.pack()
         self.travel_date = datetime.datetime(2021, 5, 15, 20, 30)
         self.TempFont=font.Font(self.gui, size=20, weight='bold', family="Consolas")
-        self.sun_info=SunInfo
+        self.sun_info=Suninfo()
+
 
         self.DataList=[]
 
+        self.BackgroundImage("asset/Search.jpg")
         self.InitInputLabel()
         self.InitRenderText()
         self.InitSearchListBox()
         self.InitSearchButton()
 
+        self.gui.protocol("WM_DELETE_WINDOW", self.Closing)
+
+
+
         self.gui.mainloop()
-
-    def だめだね(self):
-        print("だめだね、だめなのよ～")
-
+    def BackgroundImage(self,dir):
+        LoadImageDir(dir,900,400)
+        self.bg_image=self.canvas.create_image((0, 0), image=image_dic[dir], anchor=N+W)
+    def SelectDate(self,date):
+        self.travel_date = datetime.datetime(date.year, date.month, date.day)
+        self.text.set(self.travel_date.strftime("%Y-%m-%d"))
     #너꺼 가져다 썼다 고맙다
     def CreateCalendar(self):
-            CalendarGUI(self, selectCommand=self.だめだね)
+            self.calender=CalendarGUI(self, selectCommand=self.SelectDate)
 
     def SetMainButton(self, dir, x_pos, y_pos, cmd=None):
         img = Image.open(dir)
@@ -109,8 +122,8 @@ class SearchGUI:
         RenderTextScrollbar.pack()
         RenderTextScrollbar.place(x=375, y=200)
 
-        self.RenderText = Text(self.gui, width=100, height=10, borderwidth=12, relief='ridge',
-                          yscrollcommand=RenderTextScrollbar.set)
+        self.RenderText = Text(self.gui, width=100, height=10,relief="solid",borderwidth=5,
+                         yscrollcommand=RenderTextScrollbar.set)
         self.RenderText.pack()
         self.RenderText.place(x=10, y=215)
         RenderTextScrollbar.config(command=self.RenderText.yview)
@@ -124,10 +137,13 @@ class SearchGUI:
         curr=self.SearchListBox.current()
         category=""
         if curr==1:
-            category="sunrise"
+            category=Suninfo.CategoryDict["일출"]
         elif curr==2:
-            pass
-        self.sun_info.InitData(self.LocationBox.get(),locdate)
+            category = Suninfo.CategoryDict["일몰"]
+        self.sun_info=Suninfo(self.LocationBox.get(),locdate)
         self.DataList.append(self.sun_info.SearchSunData(category))
-        self.RenderText.insert(INSERT,self.DataList[0])
-SearchGUI()
+        for x in self.DataList:
+            self.RenderText.insert(INSERT,x)
+    def Closing(self):
+        SearchGUI.is_open = False
+        self.gui.destroy()

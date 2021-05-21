@@ -1,7 +1,7 @@
 from TKHelper import *
 from tkcalendar import Calendar
 import MainGUI
-
+import SunInfo
 import datetime
 
 class CalendarGUI:
@@ -33,10 +33,12 @@ class CalendarGUI:
     def SetTravelDate(self, command=None):
         date = self.cal.selection_get()
         #여기서 xml 데이터 가져온다.
-        self.main_gui.travel_date = datetime.datetime(date.year, date.month, date.day, 20, 30)
+        self.sun_info=SunInfo.Suninfo("서울",date.strftime("%Y%m%d"))
+        self.sun_time=self.sun_info.LoadTimes(self.sun_info.CategoryDict["일출"])
+        self.main_gui.travel_date = datetime.datetime(date.year, date.month, date.day, self.sun_time[0],self.sun_time[1])
 
         if command is not None:
-            command()
+            command(date)
 
         print(self.main_gui.travel_date)
 
