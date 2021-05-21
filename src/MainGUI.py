@@ -16,10 +16,6 @@ class MainGUI:
         self.canvas = Canvas(self.gui, height=720, width=1280)
         self.canvas.pack()
 
-        self.text=StringVar()#아무쓸모 없지만 켈린더 갔다가 쓰려고 어쩔수없이 만듬 ㅠㅠ
-        self.LoadFonts()
-        self.SetBackGround()
-
         LoadFonts()
         LoadIconData()
 
