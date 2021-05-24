@@ -88,7 +88,7 @@ class ForecastGUI:
         if is_cur_data_update or not ForecastGUI.is_open:
             is_cur_data_update = False
             self.canvas.itemconfig(self.cur_data["date"], text="{0} - {1}".format(\
-                cg_unix_md(json_data["dt"]), cg_unix_d(json_data["dt"])))
+                cg_unix_mdh(json_data["dt"]), cg_unix_d(json_data["dt"])))
             self.canvas.itemconfig(self.cur_data["temp"],\
                 text="현재 온도 : {temp:.1f}ºC, 체감 온도 : {feel:.1f}ºC, 습도 : {humi}%".format(\
                 temp=k2c(json_data["main"]["temp"]), feel=k2c(json_data["main"]["feels_like"]),\
