@@ -1,6 +1,7 @@
 from TKHelper import *
 from Calendar import *
 from Weather import *
+from SunInfo import *
 import Search
 import datetime
 
@@ -75,6 +76,11 @@ class MainGUI:
                                text=(self.sun_rs_text + " 시간: " + self.travel_date.strftime("%Y-%m-%d %H:%M:%S")))
         self.gui.after(500, self.UpdateTime)
 
+    def UpdateTravelDate(self, date):
+        sun_info = Suninfo(self.cur_location, date.strftime("%Y%m%d"))
+        sun_time = sun_info.LoadTimes(sun_info.CategoryDict[self.sun_rs_text])
+        self.travel_date = datetime.datetime(date.year, date.month, date.day, sun_time[0], sun_time[1])
+
     def UpdateWeather(self):
         LoadCurrentWeather("seoul,KR")
         w_data = ShowCurrentWeather()
@@ -116,7 +122,7 @@ class MainGUI:
         pass
 
     def CreateCalendar(self):
-        CalendarGUI(self)
+        CalendarGUI(self, selectCommand=self.UpdateTravelDate)
 
     def CreateForecast(self):
         ForecastGUI(self)
