@@ -8,6 +8,7 @@ show_icon = False
 apikey = "733f3162f8e13267b03559210f37cc68"
 
 api_cur = "http://api.openweathermap.org/data/2.5/weather?q={city}&APPID={key}"
+api_cur_geo = "http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&APPID={key}"
 api_day = "https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}8&exclude=hourly&appid={key}"
 icon_url = "http://openweathermap.org/img/wn/{icon}@2x.png"
 
@@ -31,6 +32,14 @@ def LoadIconData():
 
 def LoadCurrentWeather(city):
     url = api_cur.format(city=city, key=apikey)
+    url_data = urllib.request.urlopen(url)
+    weather_data = url_data.read()
+    global json_data, is_cur_data_update
+    json_data = json.loads(weather_data)
+    is_cur_data_update = True
+
+def LoadCurrentWeather(lat, lon):
+    url = api_cur_geo.format(lat=lat, lon=lon, key=apikey)
     url_data = urllib.request.urlopen(url)
     weather_data = url_data.read()
     global json_data, is_cur_data_update

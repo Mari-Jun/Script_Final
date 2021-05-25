@@ -34,14 +34,15 @@ class MainGUI:
         self.bg_image = self.canvas.create_image((0, 0), image=image_dic[dir], anchor=N+W)
 
     def SetMainTexts(self):
-        now = datetime.datetime.now() + datetime.timedelta(hours=1)
+        now = datetime.datetime.now() + datetime.timedelta(days = 1)
         self.travel_date = datetime.datetime(now.year, now.month, now.day, now.hour, now.minute)
         self.cur_location = "서울"
+        self.cur_location_geo = {"lat":"37.5683", "lon":"126.9778"}
 
         self.subtitle = self.canvas.create_text((T_POS_X, T_POS_Y), font=font_dic["Forte"],\
                                                 text="해가 뜰 때까지", anchor=W)
 
-        CreateAlphaRectangle(self.gui, self.canvas, T_POS_X - 30, T_POS_Y + 150, T_POS_X + 450, T_POS_Y + 310, \
+        CreateAlphaRectangle(self.gui, self.canvas, T_POS_X - 30, T_POS_Y + 150, T_POS_X + 500, T_POS_Y + 310, \
                              color="white", alpha=0.7)
 
         self.time_remaing_text = self.canvas.create_text((T_POS_X, T_POS_Y + 80), font=font_dic["Forte"],\
@@ -54,15 +55,16 @@ class MainGUI:
         self.cur_location_text = self.canvas.create_text((T_POS_X, T_POS_Y + 280), font=font_dic["Cooper"],\
                                 text=("지역: " + self.cur_location), anchor=W, fill="dim gray")
         self.UpdateTime()
+        self.UpdateTravelDate(self.travel_date)
 
 
     def SetMainWeather(self):
-        CreateAlphaRectangle(self.gui, self.canvas, T_POS_X - 30, T_POS_Y +350, T_POS_X + 450, T_POS_Y + 460,\
+        CreateAlphaRectangle(self.gui, self.canvas, T_POS_X - 30, T_POS_Y + 350, T_POS_X + 500, T_POS_Y + 460,\
                              color="white", alpha=0.7)
 
         self.cur_weather_text = self.canvas.create_text((T_POS_X, T_POS_Y + 380), font=font_dic["Cooper"], \
                                                        text="", anchor=W, fill="dim gray")
-        self.cur_weather_icon = self.canvas.create_image((T_POS_X, T_POS_Y + 430), image=None, anchor=W)
+        self.cur_weather_icon = self.canvas.create_image((T_POS_X, T_POS_Y + 425), image=None, anchor=W)
         self.UpdateWeather()
 
     def UpdateTime(self):
@@ -82,7 +84,7 @@ class MainGUI:
         self.travel_date = datetime.datetime(date.year, date.month, date.day, sun_time[0], sun_time[1])
 
     def UpdateWeather(self):
-        LoadCurrentWeather("seoul,KR")
+        LoadCurrentWeather(lat=self.cur_location_geo["lat"], lon=self.cur_location_geo["lon"])
         w_data = ShowCurrentWeather()
         self.canvas.itemconfig(self.cur_weather_text, text=("날씨: {0}, 기온: {1}, 구름양: {2}").format(\
             w_data[0], w_data[1], w_data[2]))
@@ -116,6 +118,7 @@ class MainGUI:
                     text=(self.sun_rs_text + " 시간: " + self.travel_date.strftime("%Y-%m-%d %H:%M:%S")))
         self.canvas.itemconfig(self.bg_image,\
                     image=image_dic["asset/bg_sunrise.png"] if self.is_sunrise else image_dic["asset/bg_sunset.png"])
+        self.UpdateTravelDate(self.travel_date)
 
     def CreateMap(self):
         #이 부분에서 self.cur_location을 설정해서 다른 부분을 수정해야함. 따로 MapGUI 클래스 생성해서 만들자.
