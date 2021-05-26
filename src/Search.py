@@ -3,6 +3,7 @@ import tkinter.messagebox
 from Calendar import *
 import datetime
 from SunInfo import *
+import BarChart
 B_Size = 35
 T_POS_X, T_POS_Y = 20, 300
 class SearchGUI:
@@ -80,10 +81,12 @@ class SearchGUI:
 
         self.SearchListBox = ttk.Combobox(self.gui,width=15,font=self.TempFont)
         self.SearchListBox['values']=('정보선택','일출시간','일몰시간','박명시간','태양고도')
+        self.SearchListBox.bind("<<ComboboxSelected>>",self.change_box)
         self.SearchListBox.pack()
         self.SearchListBox.place(x=20, y=32)
         self.SearchListBox.current(0)
         self.gui.option_add('*TCombobox*Listbox.font', self.TempFont)
+
 
         self.LocationBox = ttk.Combobox(self.gui, width=11, font=self.TempFont)
         self.LocationBox['values'] = ('지역','강릉', '강화도', '거제', '거창', '경산', '경주', '고성(강원)', '고양',
@@ -92,12 +95,32 @@ class SearchGUI:
             '시흥', '아산', '안동', '안산', '안양', '양양', '양평', '여수', '여수공항', '여주', '영광', '영덕', '영월', '영주', '영천', '완도', '용인', '울릉도', '울산', '울진', '원주', '의성', '익산', '인천', '임실', '장수',
             '장흥', '전주', '정읍', '제주', '제주(레)', '제천', '주문진', '진도', '진주', '진해', '창원', '천안', '청주', '청주공항', '추풍령', '춘양', '춘천', '충주', '태백', '태안', '통영', '파주', '평택', '포항', '해남',
             '화성', '흑산도')
-
-
         self.LocationBox.pack()
         self.LocationBox.place(x=20, y=102)
         self.LocationBox.current(0)
 
+
+
+
+
+    def change_box(self,event):
+        if self.SearchListBox.current()==4:
+            self.LocationBox['values']=(
+                '지역', '서울', '속초', '부산', '대구', '대전', '광주'
+            )
+        else:
+            self.LocationBox['values'] = ('지역', '강릉', '강화도', '거제', '거창', '경산', '경주', '고성(강원)', '고양',
+                                          '고흥', '광양', '광주', '광주(경기)', '구미', '군산', '김천', '김해', '남원', '남해', '대관령', '대구',
+                                          '대덕', '대전', '독도', '동해',
+                                          '마산', '목포', '무안', '밀양', '변산', '보령', '보성', '보현산', '부산', '부안', '부천', '사천', '삼척',
+                                          '상주', '서귀포', '서산', '서울', '서천', '성산일출봉', '세종', '소백산', '속초', '수원', '순천', '승주',
+                                          '시흥', '아산', '안동', '안산', '안양', '양양', '양평', '여수', '여수공항', '여주', '영광', '영덕',
+                                          '영월', '영주', '영천', '완도', '용인', '울릉도', '울산', '울진', '원주', '의성', '익산', '인천', '임실',
+                                          '장수',
+                                          '장흥', '전주', '정읍', '제주', '제주(레)', '제천', '주문진', '진도', '진주', '진해', '창원', '천안',
+                                          '청주', '청주공항', '추풍령', '춘양', '춘천', '충주', '태백', '태안', '통영', '파주', '평택', '포항',
+                                          '해남',
+                                          '화성', '흑산도')
 
 
     #검색 버튼
@@ -205,19 +228,24 @@ class SearchGUI:
 
     def SearchSunHeight(self):
         locdate = self.travel_date.strftime("%Y%m%d")
-
+        altList=[]
         self.sun_info = Suninfo(self.LocationBox.get(), locdate)
-        longitude = self.sun_info.LoadLongitude()
-        latitude = self.sun_info.LoadLatitude()
-        tw_civil = self.sun_info.LoadTimes(Suninfo.CategoryDict["시민박명(아침)"]) + self.sun_info.LoadTimes(
-            Suninfo.CategoryDict["시민박명(저녁)"])
-        tw_naut = self.sun_info.LoadTimes(Suninfo.CategoryDict["항해박명(아침)"]) + self.sun_info.LoadTimes(
-            Suninfo.CategoryDict["항해박명(저녁)"])
-        tw_ast = self.sun_info.LoadTimes(Suninfo.CategoryDict["천문박명(아침)"]) + self.sun_info.LoadTimes(
-            Suninfo.CategoryDict["천문박명(저녁)"])
+        altList.append(self.sun_info.LoadAltitude("09"))
+        altList.append(self.sun_info.LoadAltitude("12"))
+        altList.append(self.sun_info.LoadAltitude("15"))
+        altList.append(self.sun_info.LoadAltitude("18"))
+        for i in range(2):
+            altList.insert(i+1,(altList[i]+altList[i+1])//2)
+        for i in range(3,5):
+            altList.insert(i+1,(altList[i]+altList[i+1])//2)
+        for i in range(6,8):
+            altList.insert(i + 1, (altList[i] + altList[i + 1]) // 2)
+        print(altList)
 
         self.canvas.itemconfig(self.date_text, text="날짜: " + self.travel_date.strftime("%Y-%m-%d"))
-        self.canvas.itemconfig(self.location_text, text="지역: " + self.LocationBox.get())
+        self.canvas.itemconfig(self.location_text, text= self.LocationBox.get()+"시 태양고도 그래프")
+        self.barchart = BarChart.BarChart(T_POS_X+300, T_POS_Y+320, altList, self,y_stretch=2,x_stretch=20)
+        self.barchart.DrawBar()
     def Closing(self):
         SearchGUI.is_open = False
         self.gui.destroy()
