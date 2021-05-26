@@ -18,8 +18,6 @@ json_data = None
 json_day_data = None
 icon_data = {}
 
-is_cur_data_update = False
-
 def LoadIconData():
     if not show_icon:
         return
@@ -34,21 +32,18 @@ def LoadCurrentWeather(city):
     url = api_cur.format(city=city, key=apikey)
     url_data = urllib.request.urlopen(url)
     weather_data = url_data.read()
-    global json_data, is_cur_data_update
+    global json_data
     json_data = json.loads(weather_data)
-    is_cur_data_update = True
 
 def LoadCurrentWeather(lat, lon):
     url = api_cur_geo.format(lat=lat, lon=lon, key=apikey)
     url_data = urllib.request.urlopen(url)
     weather_data = url_data.read()
-    global json_data, is_cur_data_update
+    global json_data
     json_data = json.loads(weather_data)
-    is_cur_data_update = True
 
 def ShowCurrentWeather():
     global json_data
-    print(json_data)
     data = [json_data["weather"][0]["description"], round(k2c(json_data["main"]["temp"])), json_data["clouds"]["all"],\
             icon_data[json_data["weather"][0]["icon"]] if show_icon else None]
     return data
@@ -63,6 +58,7 @@ class ForecastGUI:
         if ForecastGUI.is_open:
             return
         self.main_gui = MainGui
+        self.main_gui.forecast = self
         self.gui = Toplevel(self.main_gui.gui)
         self.gui.title("Forecast")
         self.gui.geometry("{width}x{height}".format(width=F_WIDTH, height=F_HEIGHT))
@@ -92,22 +88,21 @@ class ForecastGUI:
 
         self.UpdateCurWeatherInfo()
 
-    def UpdateCurWeatherInfo(self):
-        global is_cur_data_update
-        if is_cur_data_update or not ForecastGUI.is_open:
-            is_cur_data_update = False
-            self.canvas.itemconfig(self.cur_data["date"], text="{0} - {1}".format(\
-                cg_unix_mdh(json_data["dt"]), cg_unix_d(json_data["dt"])))
-            self.canvas.itemconfig(self.cur_data["temp"],\
-                text="현재 온도 : {temp:.1f}ºC, 체감 온도 : {feel:.1f}ºC, 습도 : {humi}%".format(\
-                temp=k2c(json_data["main"]["temp"]), feel=k2c(json_data["main"]["feels_like"]),\
-                humi=json_data["main"]["humidity"]))
-            self.canvas.itemconfig(self.cur_data["wind"], text="풍속 : {speed}meter/sec, 방향 : {deg}º".format(\
-                speed=json_data["wind"]["speed"], deg=json_data["wind"]["deg"]))
-            self.canvas.itemconfig(self.cur_data["etc"], text="강우량 : {rain}mm/h, 강설량 : {snow}mm/h".format(\
-                rain=json_data["rain"]["1h"] if "rain" in json_data else 0,\
-                snow=json_data["snow"]["1h"] if "snow" in json_data else 0))
+    def UpdateCurWeatherInfoDirect(self):
+        self.canvas.itemconfig(self.cur_data["date"], text="{0} - {1}".format( \
+            cg_unix_mdh(json_data["dt"]), cg_unix_d(json_data["dt"])))
+        self.canvas.itemconfig(self.cur_data["temp"], \
+                               text="현재 온도 : {temp:.1f}ºC, 체감 온도 : {feel:.1f}ºC, 습도 : {humi}%".format( \
+                                   temp=k2c(json_data["main"]["temp"]), feel=k2c(json_data["main"]["feels_like"]), \
+                                   humi=json_data["main"]["humidity"]))
+        self.canvas.itemconfig(self.cur_data["wind"], text="풍속 : {speed}meter/sec, 방향 : {deg}º".format( \
+            speed=json_data["wind"]["speed"], deg=json_data["wind"]["deg"]))
+        self.canvas.itemconfig(self.cur_data["etc"], text="강우량 : {rain}mm/h, 강설량 : {snow}mm/h".format( \
+            rain=json_data["rain"]["1h"] if "rain" in json_data else 0, \
+            snow=json_data["snow"]["1h"] if "snow" in json_data else 0))
 
+    def UpdateCurWeatherInfo(self):
+        self.UpdateCurWeatherInfoDirect()
         self.gui.after(5000, self.UpdateCurWeatherInfo)
 
     def SetWeekWeatherInfo(self):
@@ -140,7 +135,7 @@ class ForecastGUI:
         day_data = url_data.read()
         json_day_data = json.loads(day_data)
 
-    def UpdateWeekWeatherInfo(self):
+    def UpdateWeekWeatherInfoDirect(self):
         self.LoadJsonData()
         self.UpdateDailyWeatherInfo(day=1)
         self.UpdateDailyWeatherInfo(day=2)
@@ -148,6 +143,9 @@ class ForecastGUI:
         self.UpdateDailyWeatherInfo(day=4)
         self.UpdateDailyWeatherInfo(day=5)
         self.UpdateDailyWeatherInfo(day=6)
+
+    def UpdateWeekWeatherInfo(self):
+        self.UpdateWeekWeatherInfoDirect()
         self.gui.after(60000, self.UpdateWeekWeatherInfo)
 
     def UpdateDailyWeatherInfo(self, day):

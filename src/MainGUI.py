@@ -19,6 +19,8 @@ class MainGUI:
         self.canvas = Canvas(self.gui, height=720, width=1280)
         self.canvas.pack()
 
+        self.forecast = None
+
         LoadFonts()
         LoadIconData()
 
@@ -87,14 +89,20 @@ class MainGUI:
         self.travel_date = datetime.datetime(date.year, date.month, date.day, sun_time[0], sun_time[1])
 
     def UpdateLocation(self, addr=None, lat=None, lon=None):
+        #주소 업데이트
         if addr is not None:
             self.cur_location = addr
             self.canvas.itemconfig(self.cur_location_text, text=("지역: " + self.cur_location))
+        #위도 경도 업데이트
         if lat is not None and lon is not None:
             if lat != self.cur_location_geo["lat"] or lon != self.cur_location_geo["lon"]:
                 self.cur_location_geo["lat"] = lat
                 self.cur_location_geo["lon"] = lon
                 self.UpdateWeatherDirect()
+                if self.forecast is not None:
+                    if self.forecast.is_open:
+                        self.forecast.UpdateCurWeatherInfoDirect()
+                        self.forecast.UpdateWeekWeatherInfoDirect()
 
     def UpdateWeatherDirect(self):
         LoadCurrentWeather(lat=self.cur_location_geo["lat"], lon=self.cur_location_geo["lon"])
