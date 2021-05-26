@@ -2,6 +2,7 @@ from TKHelper import *
 from Calendar import *
 from Weather import *
 from SunInfo import *
+from Map import *
 import Search
 import datetime
 
@@ -120,15 +121,16 @@ class MainGUI:
                     image=image_dic["asset/bg_sunrise.png"] if self.is_sunrise else image_dic["asset/bg_sunset.png"])
         self.UpdateTravelDate(self.travel_date)
 
+
+    def CreateSearch(self):
+        Search.SearchGUI(self)
+
     def CreateMap(self):
         #이 부분에서 self.cur_location을 설정해서 다른 부분을 수정해야함. 따로 MapGUI 클래스 생성해서 만들자.
-        pass
+        MapGUI(self)
 
     def CreateCalendar(self):
         CalendarGUI(self, selectCommand=self.UpdateTravelDate)
 
     def CreateForecast(self):
         ForecastGUI(self)
-
-    def CreateSearch(self):
-        Search.SearchGUI(self)
