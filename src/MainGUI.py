@@ -19,6 +19,8 @@ class MainGUI:
         self.canvas = Canvas(self.gui, height=720, width=1280)
         self.canvas.pack()
 
+        self.forecast = None
+
         LoadFonts()
         LoadIconData()
 
@@ -80,16 +82,37 @@ class MainGUI:
         self.gui.after(500, self.UpdateTime)
 
     def UpdateTravelDate(self, date):
-        sun_info = Suninfo(self.cur_location, date.strftime("%Y%m%d"))
+        #임시로 위치는 서울 고정으로 해야함
+        #sun_info = Suninfo(self.cur_location, date.strftime("%Y%m%d"))
+        sun_info = Suninfo("서울", date.strftime("%Y%m%d"))
         sun_time = sun_info.LoadTimes(sun_info.CategoryDict[self.sun_rs_text])
         self.travel_date = datetime.datetime(date.year, date.month, date.day, sun_time[0], sun_time[1])
 
-    def UpdateWeather(self):
+    def UpdateLocation(self, addr=None, lat=None, lon=None):
+        #주소 업데이트
+        if addr is not None:
+            self.cur_location = addr
+            self.canvas.itemconfig(self.cur_location_text, text=("지역: " + self.cur_location))
+        #위도 경도 업데이트
+        if lat is not None and lon is not None:
+            if lat != self.cur_location_geo["lat"] or lon != self.cur_location_geo["lon"]:
+                self.cur_location_geo["lat"] = lat
+                self.cur_location_geo["lon"] = lon
+                self.UpdateWeatherDirect()
+                if self.forecast is not None:
+                    if self.forecast.is_open:
+                        self.forecast.UpdateCurWeatherInfoDirect()
+                        self.forecast.UpdateWeekWeatherInfoDirect()
+
+    def UpdateWeatherDirect(self):
         LoadCurrentWeather(lat=self.cur_location_geo["lat"], lon=self.cur_location_geo["lon"])
         w_data = ShowCurrentWeather()
-        self.canvas.itemconfig(self.cur_weather_text, text=("날씨: {0}, 기온: {1}, 구름양: {2}").format(\
+        self.canvas.itemconfig(self.cur_weather_text, text=("날씨: {0}, 기온: {1}, 구름양: {2}").format( \
             w_data[0], w_data[1], w_data[2]))
         self.canvas.itemconfig(self.cur_weather_icon, image=w_data[3])
+
+    def UpdateWeather(self):
+        self.UpdateWeatherDirect()
         self.gui.after(60000, self.UpdateWeather)
 
     def SetButtons(self):
@@ -126,7 +149,6 @@ class MainGUI:
         Search.SearchGUI(self)
 
     def CreateMap(self):
-        #이 부분에서 self.cur_location을 설정해서 다른 부분을 수정해야함. 따로 MapGUI 클래스 생성해서 만들자.
         MapGUI(self)
 
     def CreateCalendar(self):

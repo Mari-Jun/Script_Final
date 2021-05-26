@@ -2,6 +2,7 @@ from cefpython3 import cefpython as cef
 from tkinter import *
 import platform
 import os
+from bs4 import BeautifulSoup
 
 # Platforms
 WINDOWS = (platform.system() == "Windows")
@@ -10,14 +11,24 @@ MAC = (platform.system() == "Darwin")
 
 MAP_HTMP_PATH =  "file:///" + os.getcwd() + "/map.html"
 MAP_HTMP_PATH = MAP_HTMP_PATH.replace("\\", "/")
+MAP_HTMP_PATH = "https://marijunscript.neocities.org"
 
 GUI_WIDTH, GUI_HEIGHT = 600, 700
 
 class Visitor(object):
+    def __init__(self, MainGui):
+        self.main_gui = MainGui
+
     def Visit(self, value):
-        #print("This is the HTML source:")
-        #print(value)
-        pass
+        html = BeautifulSoup(value, "html.parser")
+        addr = html.find("span", {"id":"centerAddr"})
+        latlng = html.find("span", {"id":"latlng"})
+
+        if len(addr.text):
+            self.main_gui.UpdateLocation(addr=addr.text)
+        if len(latlng.text):
+            latlng = eval(latlng.text)
+            self.main_gui.UpdateLocation(lat=str(latlng[0]), lon=str(latlng[1]))
 
 class MapGUI:
     is_open = False
@@ -30,7 +41,7 @@ class MapGUI:
         self.gui.geometry("{width}x{height}".format(width=GUI_WIDTH, height=GUI_HEIGHT))
         self.gui.resizable(width=False, height=False)
 
-        self.browser = BrowserFrame(self.gui)
+        self.browser = BrowserFrame(self.gui, self.main_gui)
         self.browser.grid(row=1, column=0, sticky=(N + S + E + W))
         Grid.rowconfigure(self.gui, 1, weight=1)
         Grid.columnconfigure(self.gui, 0, weight=1)
@@ -44,10 +55,11 @@ class MapGUI:
 
 class BrowserFrame(Frame):
 
-    def __init__(self, mainframe):
+    def __init__(self, mainframe, MainGUI):
         self.browser = None
         Frame.__init__(self, mainframe)
         self.mainframe = mainframe
+        self.main_gui = MainGUI
         self.bind("<Configure>", self.on_configure)
         """For focus problems see Issue #255 and Issue #535. """
 
@@ -67,7 +79,7 @@ class BrowserFrame(Frame):
     def UpdateInfo(self):
         if self.browser is not None:
 
-            self.myvisitor = Visitor()
+            self.myvisitor = Visitor(self.main_gui)
             mainFrame = self.browser.GetMainFrame()
             mainFrame.GetSource(self.myvisitor)
 
