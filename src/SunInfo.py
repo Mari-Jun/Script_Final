@@ -81,7 +81,14 @@ class Suninfo:
     def LoadTimes(self,category):
         Times=self.SearchSunData(category)
         return(int(Times[:2]),int(Times[2:]))
-
+    def LoadLatitude(self):
+        latitude=self.SearchSunData(self.CategoryDict["위도"])
+        #도,분으로 나눠서 반환
+        return(int(latitude[:2]),int(latitude[2:]))
+    def LoadLongitude(self):
+        latitude=self.SearchSunData(self.CategoryDict["경도"])
+        #도,분으로 나눠서 반환
+        return(int(latitude[:3]),int(latitude[3:]))
     def InitSunHeightData(self,location,locdata):
 
         my_location = urllib.parse.quote(location)
