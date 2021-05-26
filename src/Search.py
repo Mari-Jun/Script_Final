@@ -22,7 +22,7 @@ class SearchGUI:
         self.travel_date = datetime.datetime(2021, 5, 15, 20, 30)
         self.TempFont=font.Font(self.gui, size=20, weight='bold', family="Consolas")
         self.sun_info=Suninfo()
-
+        self.barchart=None
 
         self.DataList=[]
 
@@ -53,16 +53,19 @@ class SearchGUI:
         b_image = ImageTk.PhotoImage(img)
         image_list.append(b_image)
         Button(self.canvas, image=b_image, width=B_Size, height=B_Size, command=cmd).place(x=x_pos, y=y_pos)
-    def resetText(self,TW=True):
-        if TW:
-            self.canvas.itemconfig(self.civil_text,
+    def resetText(self):
+        if not self.barchart is None:
+            self.barchart.resetbar()
+
+        self.canvas.itemconfig(self.civil_text,
                                text="")
-            self.canvas.itemconfig(self.naut_text,
+        self.canvas.itemconfig(self.naut_text,
                                text="")
-            self.canvas.itemconfig(self.ast_text,
+        self.canvas.itemconfig(self.ast_text,
                                text="")
-        else:
-            self.canvas.itemconfig(self.risetime_text, text="")
+        self.canvas.itemconfig(self.longitude_text,
+                               text="")
+        self.canvas.itemconfig(self.risetime_text, text="")
     #날짜를 선택하면 나오게 함
     def InitInputLabel(self):
         my_x=20
@@ -197,7 +200,7 @@ class SearchGUI:
         self.canvas.itemconfig(self.risetime_text, text="일몰시간은 {0}시 {1}분 입니다".format(time[0], time[1]))
 
     def SearchTwilight(self):
-        self.resetText(TW=False)
+        self.resetText()
         locdate = self.travel_date.strftime("%Y%m%d")
 
         self.sun_info = Suninfo(self.LocationBox.get(), locdate)
@@ -227,6 +230,7 @@ class SearchGUI:
 
 
     def SearchSunHeight(self):
+        self.resetText()
         locdate = self.travel_date.strftime("%Y%m%d")
         altList=[]
         self.sun_info = Suninfo(self.LocationBox.get(), locdate)
@@ -240,7 +244,6 @@ class SearchGUI:
             altList.insert(i+1,(altList[i]+altList[i+1])//2)
         for i in range(6,8):
             altList.insert(i + 1, (altList[i] + altList[i + 1]) // 2)
-        print(altList)
 
         self.canvas.itemconfig(self.date_text, text="날짜: " + self.travel_date.strftime("%Y-%m-%d"))
         self.canvas.itemconfig(self.location_text, text= self.LocationBox.get()+"시 태양고도 그래프")
