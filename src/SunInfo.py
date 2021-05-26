@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as ET
 import urllib.request
 from xml.dom.minidom import parse,parseString
-
+import re
 
 
 # 출몰정보 인증키
@@ -28,7 +28,7 @@ class Suninfo:
                     }
     def __init__(self,location="서울",locdata="20210515"):
         self.InitSunData(location,locdata)
-
+        self.InitSunHeightData(location,locdata)
     def InitSunData(self,location,locdata):
 
         my_location = urllib.parse.quote(location)
@@ -51,44 +51,6 @@ class Suninfo:
         else:
             print("Error Code:"+rescode)
 
-
-    def checkDocument(self):
-
-        if self.SunInfoDoc == None:
-            print("Error : Document is empty")
-            return False
-        return True
-
-    #정보 마다로 수정해야함
-    def SearchSunData(self,category):
-
-        if not self.checkDocument():
-            return None
-
-        try:
-            tree = ET.fromstring(str(self.SunInfoDoc.toxml()))
-        except Exception:
-            print("Element Tree parsing Error : maybe the xml document is not corrected.")
-            return None
-
-        SunElements = tree.iter("item")
-        for item in SunElements:
-            strTitle = item.find(category)
-
-        return strTitle.text
-
-    #얘는 예외처리 따로 안할꺼임 시간부를때만 사용좀
-    def LoadTimes(self,category):
-        Times=self.SearchSunData(category)
-        return(int(Times[:2]),int(Times[2:]))
-    def LoadLatitude(self):
-        latitude=self.SearchSunData(self.CategoryDict["위도"])
-        #도,분으로 나눠서 반환
-        return(int(latitude[:2]),int(latitude[2:]))
-    def LoadLongitude(self):
-        latitude=self.SearchSunData(self.CategoryDict["경도"])
-        #도,분으로 나눠서 반환
-        return(int(latitude[:3]),int(latitude[3:]))
     def InitSunHeightData(self,location,locdata):
 
         my_location = urllib.parse.quote(location)
@@ -97,7 +59,7 @@ class Suninfo:
         # 날짜
         locdate = "&locdate=" + locdata
 
-        url=location_server+encoding_key+location+locdate
+        url=location_server+encoding_key1+location+locdate
         request=urllib.request.Request(url)
 
         response=urllib.request.urlopen(request)
@@ -110,21 +72,69 @@ class Suninfo:
 
         else:
             print("Error Code:"+rescode)
-    '''
-    def SearchSunHeightData(self,a,b):
-        global SuninfoDoc
-        if not checkDocument():
-            return None
-    
-        try:
-            tree = ET.fromstring(str(SuninfoDoc.toxml()))
-        except Exception:
-            print("Element Tree parsing Error : maybe the xml document is not corrected.")
-            return None
-    
-        SunElements = tree.iter(a)
+    def checkDocument(self,doc):
+
+        if doc == None :
+            print("Error : Document is empty")
+            return False
+
+        return True
+
+    #정보 마다로 수정해야함
+    def SearchSunData(self,category,is_SunHeight=False):
+
+        if is_SunHeight:
+            if not self.checkDocument(self.SunHeightDoc):
+                return None
+
+            try:
+                tree = ET.fromstring(str(self.SunHeightDoc.toxml()))
+            except Exception:
+                print("Element Tree parsing Error : maybe the xml document is not corrected.")
+                return None
+
+
+        else:
+            if not self.checkDocument(self.SunInfoDoc):
+                return None
+
+            try:
+                tree = ET.fromstring(str(self.SunInfoDoc.toxml()))
+            except Exception:
+                print("Element Tree parsing Error : maybe the xml document is not corrected.")
+                return None
+
+        SunElements = tree.iter("item")
         for item in SunElements:
-            strTitle = item.find(b)
-    
-        return strTitle
-    '''
+            strTitle = item.find(category)
+
+        return strTitle.text
+
+
+    #얘는 예외처리 따로 안할꺼임 시간부를때만 사용좀
+    def LoadTimes(self,category,is_SunHeight=False):
+        Times=self.SearchSunData(category,is_SunHeight)
+        return(int(Times[:2]),int(Times[2:]))
+
+
+    def LoadLatitude(self,is_SunHeight=False):
+        latitude=self.SearchSunData(self.CategoryDict["위도"],is_SunHeight)
+        #도,분으로 나눠서 반환
+        return(int(latitude[:2]),int(latitude[2:]))
+
+
+    def LoadLongitude(self,is_SunHeight=False):
+        latitude=self.SearchSunData(self.CategoryDict["경도"],is_SunHeight)
+        #도,분으로 나눠서 반환
+        return(int(latitude[:3]),int(latitude[3:]))
+
+    def LoadAltitude(self,time):
+        altitude=self.SearchSunData("altitude_"+time,is_SunHeight=True)
+
+        if altitude[0]=="-":
+            return 0
+        else:
+            a=re.findall("\d+",altitude)
+
+            return eval(a[0])
+
