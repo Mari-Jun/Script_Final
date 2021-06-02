@@ -1,6 +1,7 @@
 from TKHelper import *
 from Calendar import *
 from Weather import *
+from Details import*
 from SunInfo import *
 from Map import *
 import Search
@@ -123,7 +124,7 @@ class MainGUI:
         self.SetMainButton("asset/map.png", B_POS_X, B_POS_Y + B_Size * 2, self.CreateMap)
         self.SetMainButton("asset/calendar.png", B_POS_X, B_POS_Y + B_Size * 3, self.CreateCalendar)
         self.SetMainButton("asset/forecast.png", B_POS_X, B_POS_Y + B_Size * 4, self.CreateForecast)
-        self.SetMainButton("asset/detail.png", B_POS_X, B_POS_Y + B_Size * 5)
+        self.SetMainButton("asset/detail.png", B_POS_X, B_POS_Y + B_Size * 5,self.CreateDetail)
         self.SetMainButton("asset/gmail.png", B_POS_X, B_POS_Y + B_Size * 6)
         self.SetMainButton("asset/telegram.png", B_POS_X, B_POS_Y + B_Size * 7)
 
@@ -156,3 +157,5 @@ class MainGUI:
 
     def CreateForecast(self):
         ForecastGUI(self)
+    def CreateDetail(self):
+        DetailGUI(self)

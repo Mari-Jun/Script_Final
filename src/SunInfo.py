@@ -103,18 +103,19 @@ class Suninfo:
             except Exception:
                 print("Element Tree parsing Error : maybe the xml document is not corrected.")
                 return None
-
+        strTitle=None
         SunElements = tree.iter("item")
         for item in SunElements:
             strTitle = item.find(category)
-
+        if strTitle==None:
+            return ""
         return strTitle.text
 
 
     #얘는 예외처리 따로 안할꺼임 시간부를때만 사용좀
     def LoadTimes(self,category,is_SunHeight=False):
         Times=self.SearchSunData(category,is_SunHeight)
-        return(int(Times[:2]),int(Times[2:]))
+        return(int(Times[:2]),int(Times[2:4]))
 
 
     def LoadLatitude(self,is_SunHeight=False):
@@ -130,11 +131,12 @@ class Suninfo:
 
     def LoadAltitude(self,time):
         altitude=self.SearchSunData("altitude_"+time,is_SunHeight=True)
-
+        if altitude=="":
+            return 0
         if altitude[0]=="-":
             return 0
+
         else:
             a=re.findall("\d+",altitude)
-
             return eval(a[0])
 
