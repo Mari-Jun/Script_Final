@@ -41,13 +41,35 @@ class SendMail:
         msg['From'] = senderAddr
         msg['To'] = recipientAddr
         self.suninfo=Suninfo(self.location,self.travel_date.strftime("%Y%m%d"))
-        msgtext='''#
-                #efmwekfmwekfm'  WEL;KFMW
-                #EFKWOEFMGWRGMWRLDFWㄺ흐제갷
-                #ㄷ개랒ㄷ랍ㅈ[ㄷ래ㅔㅏㅂㅈ[ㄷㄹ
-                #라라라대자ㅡㄷ[히ㅐㅡ직ㄷ흐
-            #ㅈ ㄹㄹㄹㄹㄹㄹㄹㄹㄹㄹㄹㄹㄹㄷ ㅇㅇ ㄷㅇㅂㅈㄷㄱ
-            '''
+        longitude=self.suninfo.LoadLongitude()
+        latitude=self.suninfo.LoadLatitude()
+        tw_civil = self.suninfo.LoadTimes(Suninfo.CategoryDict["시민박명(아침)"]) + self.suninfo.LoadTimes(
+            Suninfo.CategoryDict["시민박명(저녁)"])
+        tw_naut = self.suninfo.LoadTimes(Suninfo.CategoryDict["항해박명(아침)"]) + self.suninfo.LoadTimes(
+            Suninfo.CategoryDict["항해박명(저녁)"])
+        tw_ast = self.suninfo.LoadTimes(Suninfo.CategoryDict["천문박명(아침)"]) + self.suninfo.LoadTimes(
+            Suninfo.CategoryDict["천문박명(저녁)"])
+
+        time1 = self.suninfo.LoadTimes(Suninfo.CategoryDict["일출"])
+        time2 = self.suninfo.LoadTimes(Suninfo.CategoryDict["일중"])
+        time3 = self.suninfo.LoadTimes(Suninfo.CategoryDict["일몰"])
+
+        msgtext='''
+                날짜 : {0} , 지역 : {1}
+                위치: 동경 {2}도{3}분 / 북위 {4}도{5}분
+                
+                박명시간
+                시민박명(아침/저녁) :  아침-{6}시{7}분  /  저녁- {8}시{9}분
+                항해박명(아침/저녁) : 아침-{10}시{11}분  /  저녁- {12}시{13}분
+                천문박명(아침/저녁) : 아침-{14}시{15}분  /  저녁- {16}시{17}분
+                
+                해뜨는 시각(일출) : {18}시 {19}분
+                한낮의 시각(남중) : {20}시 {21}분
+                해지는 시각(일몰) : {22}시 {23}분
+            '''.format(self.travel_date.strftime("%Y-%m-%d"),self.location,longitude[0],longitude[1],
+                       latitude[0],latitude[1],tw_civil[0],tw_civil[1],tw_civil[2],tw_civil[3],
+                                       tw_naut[0],tw_naut[1],tw_naut[2],tw_naut[3],tw_ast[0],tw_ast[1],tw_ast[2],tw_ast[3],
+                       time1[0],time1[1],time2[0],time2[1],time3[0],time3[1])
         msgPart = MIMEText(msgtext, 'plain')
 
 
