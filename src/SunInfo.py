@@ -129,6 +129,19 @@ class Suninfo:
         #도,분으로 나눠서 반환
         return(int(latitude[:3]),int(latitude[3:]))
 
+
+    def LoadLatitudeNUM(self,is_SunHeight=False):
+        latitude=self.SearchSunData(self.CategoryDict["위도(10진수)"],is_SunHeight)
+        return eval(latitude)
+
+
+    def LoadLongitudeNUM(self,is_SunHeight=False):
+        latitude=self.SearchSunData(self.CategoryDict["경도(10진수)"],is_SunHeight)
+        return eval(latitude)
+
+
+
+
     def LoadAltitude(self,time):
         altitude=self.SearchSunData("altitude_"+time,is_SunHeight=True)
         if altitude=="":

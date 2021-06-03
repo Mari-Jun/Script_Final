@@ -184,6 +184,7 @@ class SearchGUI:
         self.canvas.itemconfig(self.risetime_text, text="일출시간은 {0}시 {1}분 입니다".format(time[0],time[1]) )
 
 
+
     def SearchSunSet(self):
         self.resetText()
         locdate = self.travel_date.strftime("%Y%m%d")
