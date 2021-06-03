@@ -47,21 +47,34 @@ class MapGUI:
         self.frame.grid(row=1, column=0, sticky=(N + S + E + W))
         Grid.rowconfigure(self.gui, 1, weight=1)
         Grid.columnconfigure(self.gui, 0, weight=1)
+        self.browser = None
+
+        self.UpdateInfo()
 
         thread = threading.Thread(target=self.embed_broser)
         thread.daemon = True
         thread.start()
 
+
+
         self.gui.mainloop()
 
     def embed_broser(self):
         sys.excepthook = cef.ExceptHook
-        window_info = cef.WindowInfo(self.frame.winfo_id())
+        window_info = cef.WindowInfo()
         rect = [0, 0, GUI_WIDTH, GUI_HEIGHT]
         window_info.SetAsChild(self.frame.winfo_id(), rect)
         cef.Initialize()
-        browser = cef.CreateBrowserSync(window_info, url=MAP_HTMP_PATH)
+        self.browser = cef.CreateBrowserSync(window_info, url=MAP_HTMP_PATH)
         cef.MessageLoop()
+
+    def UpdateInfo(self):
+        if self.browser is not None:
+            self.myvisitor = Visitor(self.main_gui)
+            mainFrame = self.browser.GetMainFrame()
+            mainFrame.GetSource(self.myvisitor)
+
+        self.gui.after(1000, self.UpdateInfo)
 
 
 class BrowserFrame(Frame):
