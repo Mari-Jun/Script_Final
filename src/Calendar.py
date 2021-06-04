@@ -24,8 +24,6 @@ class CalendarGUI:
 
         self.gui.protocol("WM_DELETE_WINDOW", self.Closing)
 
-        self.gui.mainloop()
-
     #현재는 시간이 20, 30으로 고정되어 있는데 이 부분은 xml 데이터 파일의 정보를 가져와서 설정해 주어야함.
     def SetTravelDate(self, command=None):
         date = self.cal.selection_get()
