@@ -115,8 +115,12 @@ class Suninfo:
     #얘는 예외처리 따로 안할꺼임 시간부를때만 사용좀
     def LoadTimes(self,category,is_SunHeight=False):
         Times=self.SearchSunData(category,is_SunHeight)
-        return(int(Times[:2]),int(Times[2:4]))
 
+        if not Times.replace(' ',"")=='':
+
+            return(int(Times[:2]),int(Times[2:4]))
+        else:
+            return(0,0)
 
     def LoadLatitude(self,is_SunHeight=False):
         latitude=self.SearchSunData(self.CategoryDict["위도"],is_SunHeight)

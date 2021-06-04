@@ -8,6 +8,10 @@ from Map import *
 from Search import *
 import datetime
 import latlon
+from teller import*
+
+
+
 
 T_POS_X, T_POS_Y = 100, 150
 B_Size = 75
@@ -149,7 +153,7 @@ class MainGUI:
         self.SetMainButton("asset/forecast.png", B_POS_X, B_POS_Y + B_Size * 4, self.CreateForecast)
         self.SetMainButton("asset/detail.png", B_POS_X, B_POS_Y + B_Size * 5,self.CreateDetail)
         self.SetMainButton("asset/gmail.png", B_POS_X, B_POS_Y + B_Size * 6,self.CreateMail)
-        self.SetMainButton("asset/telegram.png", B_POS_X, B_POS_Y + B_Size * 7)
+        self.SetMainButton("asset/telegram.png", B_POS_X, B_POS_Y + B_Size * 7,self.CreateTelegram)
 
     def SetMainButton(self, dir, x_pos, y_pos, cmd=None):
         LoadImageDir(dir, B_Size, B_Size)
@@ -185,3 +189,5 @@ class MainGUI:
 
     def CreateMail(self):
         SendMail(self)
+    def CreateTelegram(self):
+        TelegramGUI(self)
