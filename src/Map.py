@@ -17,6 +17,8 @@ MAP_HTMP_PATH = "https://marijunscript.neocities.org"
 
 GUI_WIDTH, GUI_HEIGHT = 600, 700
 
+
+
 class Visitor(object):
     def __init__(self, MainGui):
         self.main_gui = MainGui
@@ -32,6 +34,21 @@ class Visitor(object):
             latlng = eval(latlng.text)
             self.main_gui.UpdateLocation(lat=str(latlng[0]), lon=str(latlng[1]))
 
+
+browser = None
+
+def embed_broser(frame):
+    global browser
+    window_info = cef.WindowInfo(frame.winfo_id())
+    rect = [0, 0, GUI_WIDTH, GUI_HEIGHT]
+    window_info.SetAsChild(frame.winfo_id(), rect)
+    settings = {}
+    settings["multi_threaded_message_loop"] = False
+    cef.Initialize(settings=settings)
+    browser = cef.CreateBrowserSync(window_info, url=MAP_HTMP_PATH)
+    cef.MessageLoop()
+
+
 class MapGUI:
     is_open = False
     def __init__(self, MainGui):
@@ -42,39 +59,34 @@ class MapGUI:
         self.gui.title("Map")
         self.gui.geometry("{width}x{height}".format(width=GUI_WIDTH, height=GUI_HEIGHT))
         self.gui.resizable(width=False, height=False)
+        self.gui.protocol("WM_DELETE_WINDOW", self.Closing)
 
         self.frame = Frame(self.gui, width=GUI_WIDTH, height=GUI_HEIGHT)
         self.frame.grid(row=1, column=0, sticky=(N + S + E + W))
         Grid.rowconfigure(self.gui, 1, weight=1)
         Grid.columnconfigure(self.gui, 0, weight=1)
-        self.browser = None
 
         self.UpdateInfo()
 
-        thread = threading.Thread(target=self.embed_broser)
-        thread.daemon = True
-        thread.start()
-
-
-
-        self.gui.mainloop()
-
-    def embed_broser(self):
-        sys.excepthook = cef.ExceptHook
-        window_info = cef.WindowInfo()
-        rect = [0, 0, GUI_WIDTH, GUI_HEIGHT]
-        window_info.SetAsChild(self.frame.winfo_id(), rect)
-        cef.Initialize()
-        self.browser = cef.CreateBrowserSync(window_info, url=MAP_HTMP_PATH)
-        cef.MessageLoop()
+        self.thread = threading.Thread(target=embed_broser, args=(self.frame,))
+        self.thread.daemon = True
+        self.thread.start()
 
     def UpdateInfo(self):
-        if self.browser is not None:
+        global browser
+        if browser is not None:
             self.myvisitor = Visitor(self.main_gui)
-            mainFrame = self.browser.GetMainFrame()
+            mainFrame = browser.GetMainFrame()
             mainFrame.GetSource(self.myvisitor)
 
         self.gui.after(1000, self.UpdateInfo)
+
+    def Closing(self):
+        global browser
+        MapGUI.is_open = False
+        browser = None
+        cef.QuitMessageLoop()
+        self.gui.destroy()
 
 
 class BrowserFrame(Frame):

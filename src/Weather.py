@@ -76,8 +76,6 @@ class ForecastGUI:
 
         ForecastGUI.is_open = True
 
-        self.gui.mainloop()
-
     def SetCurWeatherInfo(self):
         CreateAlphaRectangle(self.gui, self.canvas, 5, 10, CW_WIDTH - 5, CW_HEIGHT - 10,\
                              color="white", alpha=0.7)
