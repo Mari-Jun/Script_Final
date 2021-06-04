@@ -15,6 +15,8 @@ MAP_HTMP_PATH = "https://marijunscript.neocities.org"
 
 GUI_WIDTH, GUI_HEIGHT = 600, 700
 
+
+
 class Visitor(object):
     def __init__(self, MainGui):
         self.main_gui = MainGui
@@ -40,6 +42,7 @@ class MapGUI:
         self.gui.title("Map")
         self.gui.geometry("{width}x{height}".format(width=GUI_WIDTH, height=GUI_HEIGHT))
         self.gui.resizable(width=False, height=False)
+        self.gui.protocol("WM_DELETE_WINDOW", self.Closing)
 
         self.browser = BrowserFrame(self.gui, self.main_gui)
         self.browser.grid(row=1, column=0, sticky=(N + S + E + W))
@@ -50,8 +53,9 @@ class MapGUI:
         self.browser.mainloop()
         cef.Shutdown()
 
-        self.gui.mainloop()
-
+    def Closing(self):
+        MapGUI.is_open = False
+        self.gui.destroy()
 
 class BrowserFrame(Frame):
 
@@ -61,7 +65,6 @@ class BrowserFrame(Frame):
         self.mainframe = mainframe
         self.main_gui = MainGUI
         self.bind("<Configure>", self.on_configure)
-        """For focus problems see Issue #255 and Issue #535. """
 
         self.UpdateInfo()
 

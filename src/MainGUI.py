@@ -5,9 +5,14 @@ from Details import*
 from SunInfo import *
 from Gmail import *
 from Map import *
-import Search
+from Search import *
 import datetime
+
 from teller import*
+
+import latlon
+
+
 T_POS_X, T_POS_Y = 100, 150
 B_Size = 75
 B_POS_X, B_POS_Y = 1150, 50
@@ -30,6 +35,7 @@ class MainGUI:
         self.SetMainTexts()
         self.SetMainWeather()
         self.SetButtons()
+        self.LoadLocations()
 
         self.gui.mainloop()
 
@@ -42,6 +48,7 @@ class MainGUI:
         now = datetime.datetime.now() + datetime.timedelta(days = 1)
         self.travel_date = datetime.datetime(now.year, now.month, now.day, now.hour, now.minute)
         self.cur_location = "서울"
+        self.cur_serach_location = "서울"
         self.cur_location_geo = {"lat":"37.5683", "lon":"126.9778"}
 
         self.subtitle = self.canvas.create_text((T_POS_X, T_POS_Y), font=font_dic["Forte"],\
@@ -84,11 +91,27 @@ class MainGUI:
         self.gui.after(500, self.UpdateTime)
 
     def UpdateTravelDate(self, date):
-        #임시로 위치는 서울 고정으로 해야함
-        #sun_info = Suninfo(self.cur_location, date.strftime("%Y%m%d"))
-        sun_info = Suninfo("서울", date.strftime("%Y%m%d"))
+        sun_info = Suninfo(self.cur_serach_location, date.strftime("%Y%m%d"))
         sun_time = sun_info.LoadTimes(sun_info.CategoryDict[self.sun_rs_text])
         self.travel_date = datetime.datetime(date.year, date.month, date.day, sun_time[0], sun_time[1])
+
+    def LoadLocations(self):
+        f = open("지역위치.txt", 'r')
+        while True:
+            line = f.readline()
+            if not line:
+                break
+            line = line.split(" ")
+            latlon.AddLocation(line[0], float(line[1]), float(line[2]))
+
+        # for district in DISTRICTS:
+        #     #원래는 xml에서 모두 불러오려고 하였는데 전부 불러오는데 1분정도가 걸려서 txt파일로 저장후 거기서 불러오도록 바꿈
+        #     sun_info = Suninfo(district, self.travel_date.strftime("%Y%m%d"))
+        #     lat = sun_info.LoadLatitudeNUM()
+        #     lon = sun_info.LoadLongitudeNUM()
+        #     line = district + " {0} {1} \n".format(lat, lon)
+        #     f.write(line)
+        #     latlon.AddLocation(district, lat, lon)
 
     def UpdateLocation(self, addr=None, lat=None, lon=None):
         #주소 업데이트
@@ -101,6 +124,9 @@ class MainGUI:
                 self.cur_location_geo["lat"] = lat
                 self.cur_location_geo["lon"] = lon
                 self.UpdateWeatherDirect()
+                self.cur_serach_location = latlon.GetNearLocation(float(lat), float(lon))
+                print(self.cur_serach_location)
+                self.UpdateTravelDate(self.travel_date)
                 if self.forecast is not None:
                     if self.forecast.is_open:
                         self.forecast.UpdateCurWeatherInfoDirect()
@@ -148,7 +174,7 @@ class MainGUI:
 
 
     def CreateSearch(self):
-        Search.SearchGUI(self)
+        SearchGUI(self)
 
     def CreateMap(self):
         MapGUI(self)
