@@ -117,7 +117,7 @@ class Suninfo:
         Times=self.SearchSunData(category,is_SunHeight)
 
         if not Times.replace(' ',"")=='':
-            print(Times)
+
             return(int(Times[:2]),int(Times[2:4]))
         else:
             return(0,0)
