@@ -165,6 +165,8 @@ class TelegramGUI:
                               tw_naut[0], tw_naut[1], tw_naut[2], tw_naut[3], tw_ast[0], tw_ast[1], tw_ast[2],
                               tw_ast[3],
                               time1[0], time1[1], time2[0], time2[1], time3[0], time3[1])
+        if self.id_input.get()=="":
+            return
         self.bot.sendMessage(self.id_input.get(),msgtext)
     def Closing(self):
         TelegramGUI.is_open = False
