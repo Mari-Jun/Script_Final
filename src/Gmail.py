@@ -36,6 +36,8 @@ class SendMail:
         self.gui.mainloop()
     def Send(self):
         recipientAddr = self.id_input.get()  # 받는 사람 email 주소.
+        if recipientAddr=="":
+            return
         msg = MIMEBase("multipart", "alternative")
         msg['Subject'] = "해가 뜰때까지에서 보내드립니다"
         msg['From'] = senderAddr
