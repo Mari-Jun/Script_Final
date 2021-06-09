@@ -85,7 +85,7 @@ class SendMail:
         s.starttls()
         s.ehlo()
         s.login("undugy98@gmail.com","undugy98")
-        s.sendmail(senderAddr , [recipientAddr], msg.as_string())
+        s.sendmail("undugy98@gmail.com" , [recipientAddr], msg.as_string())
         s.close()
 
     def Closing(self):

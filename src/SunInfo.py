@@ -124,14 +124,23 @@ class Suninfo:
 
     def LoadLatitude(self,is_SunHeight=False):
         latitude=self.SearchSunData(self.CategoryDict["위도"],is_SunHeight)
-        #도,분으로 나눠서 반환
-        return(int(latitude[:2]),int(latitude[2:]))
+        if not latitude.replace(' ',"")=='':
+
+            return(int(latitude[:2]),int(latitude[2:]))
+        else:
+            return(0,0)
+
 
 
     def LoadLongitude(self,is_SunHeight=False):
         latitude=self.SearchSunData(self.CategoryDict["경도"],is_SunHeight)
         #도,분으로 나눠서 반환
-        return(int(latitude[:3]),int(latitude[3:]))
+        if not latitude.replace(' ',"")=='':
+
+            return(int(latitude[:3]),int(latitude[3:]))
+        else:
+            return(0,0)
+
 
 
     def LoadLatitudeNUM(self,is_SunHeight=False):

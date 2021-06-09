@@ -15,7 +15,7 @@ class DetailGUI:
         self.gui.geometry("{width}x{height}".format(width=F_WIDTH, height=F_HEIGHT))
         self.canvas = Canvas(self.gui, height=F_HEIGHT, width=F_WIDTH, background="pale green")
         self.canvas.pack()
-        self.location = self.main_gui.cur_location
+        self.location = self.main_gui.cur_serach_location
         self.InitRenderText()
         self.TopInfo()
         self.RenderTwilight()
