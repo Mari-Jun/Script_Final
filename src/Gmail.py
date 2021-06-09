@@ -25,7 +25,7 @@ class SendMail:
         self.id_input = Entry(self.gui, width=30)
         self.id_input.pack()
 
-        self.location = self.main_gui.cur_location
+        self.location = self.main_gui.cur_serach_location
         self.travel_date = self.main_gui.travel_date
 
         self.button = Button(self.gui, text="보내기", background="white",command=self.Send)

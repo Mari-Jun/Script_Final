@@ -122,7 +122,7 @@ class TelegramGUI:
         self.id_input = Entry(self.gui, width=30)
         self.id_input.pack()
 
-        self.location = self.main_gui.cur_location
+        self.location = self.main_gui.cur_serach_location
         self.travel_date = self.main_gui.travel_date
 
         self.bot=telepot.Bot('1804655771:AAHg4RrlyOra3rKqLpgfRm9a32YqFRF29qY')
