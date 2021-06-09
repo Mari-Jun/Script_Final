@@ -130,7 +130,6 @@ class TelegramGUI:
         self.button.pack()
 
         self.gui.protocol("WM_DELETE_WINDOW", self.Closing)
-
         self.gui.mainloop()
 
     def Send(self):
